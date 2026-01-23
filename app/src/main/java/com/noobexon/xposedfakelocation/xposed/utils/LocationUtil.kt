@@ -127,7 +127,7 @@ object LocationUtil {
                 }
 
                 if (PreferencesUtil.getUseVerticalAccuracy() == true) {
-                    verticalAccuracy = PreferencesUtil.getVerticalAccuracy()?.toFloat() ?: DEFAULT_VERTICAL_ACCURACY
+                    verticalAccuracy = PreferencesUtil.getVerticalAccuracy() ?: DEFAULT_VERTICAL_ACCURACY
                 }
 
                 if (PreferencesUtil.getUseMeanSeaLevel() == true) {
@@ -135,15 +135,15 @@ object LocationUtil {
                 }
 
                 if (PreferencesUtil.getUseMeanSeaLevelAccuracy() == true) {
-                    meanSeaLevelAccuracy = PreferencesUtil.getMeanSeaLevelAccuracy()?.toFloat() ?: DEFAULT_MEAN_SEA_LEVEL_ACCURACY
+                    meanSeaLevelAccuracy = PreferencesUtil.getMeanSeaLevelAccuracy() ?: DEFAULT_MEAN_SEA_LEVEL_ACCURACY
                 }
 
                 if (PreferencesUtil.getUseSpeed() == true) {
-                    speed = PreferencesUtil.getSpeed()?.toFloat() ?: DEFAULT_SPEED
+                    speed = PreferencesUtil.getSpeed() ?: DEFAULT_SPEED
                 }
 
                 if (PreferencesUtil.getUseSpeedAccuracy() == true) {
-                    speedAccuracy = PreferencesUtil.getSpeedAccuracy()?.toFloat() ?: DEFAULT_SPEED_ACCURACY
+                    speedAccuracy = PreferencesUtil.getSpeedAccuracy() ?: DEFAULT_SPEED_ACCURACY
                 }
 
                 if (DEBUG) {
