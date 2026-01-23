@@ -24,6 +24,9 @@ class MainActivity : ComponentActivity() {
 
         var isXposedModuleEnabled = true
 
+        // Initialize OSMDroid configuration
+        Configuration.getInstance().userAgentValue = com.noobexon.xposedfakelocation.BuildConfig.APPLICATION_ID
+        
         // If the module is not enabled then the app won't have permission to use MODE_WORLD_READABLE.
         try {
             Configuration.getInstance().load(this, getPreferences(MODE_WORLD_READABLE))

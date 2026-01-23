@@ -90,11 +90,16 @@ fun MapViewContainer(
         }
     }
 
-    // Display loading spinner or MapView
-    if (loadingState == LoadingState.Loading) {
-        LoadingSpinner()
-    } else {
-        DisplayMapView(mapView)
+    // Display MapView immediately for better UX
+    DisplayMapView(mapView)
+
+    // Initial centering logic if we haven't centered yet
+    LaunchedEffect(mapView) {
+        if (lastClickedLocation != null) {
+            mapView.controller.setZoom(mapZoom ?: DEFAULT_MAP_ZOOM)
+            mapView.controller.setCenter(lastClickedLocation)
+            mapViewModel.setLoadingFinished()
+        }
     }
 }
 
@@ -293,7 +298,7 @@ private fun centerOnDefaultLocation(
 ) {
     // If location is not available after timeout, set default location
     mapView.controller.setZoom(WORLD_MAP_ZOOM)
-    mapView.controller.setCenter(GeoPoint(0.0, 0.0))
+    mapView.controller.setCenter(GeoPoint(10.8231, 106.6297)) // Center on Vietnam/Asia as a better default than 0,0
     mapViewModel.updateMapZoom(WORLD_MAP_ZOOM)
     mapViewModel.setLoadingFinished()
 }
@@ -313,26 +318,6 @@ private fun ManageMapViewLifecycle(
             mapView.onPause()
             mapView.onDetach()
             mapViewModel.setLoadingStarted()
-        }
-    }
-}
-
-@Composable
-private fun LoadingSpinner() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CircularProgressIndicator()
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Updating Map...",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
