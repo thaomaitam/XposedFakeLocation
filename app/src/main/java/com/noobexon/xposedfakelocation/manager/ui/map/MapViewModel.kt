@@ -8,7 +8,7 @@ import com.noobexon.xposedfakelocation.data.model.FavoriteLocation
 import com.noobexon.xposedfakelocation.data.repository.PreferencesRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.osmdroid.util.GeoPoint
+import org.maplibre.android.geometry.LatLng
 
 /**
  * Sealed classes to represent different dialog states
@@ -51,10 +51,10 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
      */
     data class MapUiState(
         val isPlaying: Boolean = false,
-        val lastClickedLocation: GeoPoint? = null,
-        val userLocation: GeoPoint? = null,
+        val lastClickedLocation: LatLng? = null,
+        val userLocation: LatLng? = null,
         val loadingState: LoadingState = LoadingState.Loading,
-        val mapZoom: Double? = null,
+        val mapZoom: Float? = null,
         val goToPointDialogState: DialogState = DialogState.Hidden,
         val addToFavoritesDialogState: DialogState = DialogState.Hidden,
         val goToPointState: Pair<InputFieldState, InputFieldState> = InputFieldState() to InputFieldState(),
@@ -71,8 +71,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     val uiState: StateFlow<MapUiState> = _uiState.asStateFlow()
 
     // Events
-    private val _goToPointEvent = MutableSharedFlow<GeoPoint>()
-    val goToPointEvent: SharedFlow<GeoPoint> = _goToPointEvent.asSharedFlow()
+    private val _goToPointEvent = MutableSharedFlow<LatLng>()
+    val goToPointEvent: SharedFlow<LatLng> = _goToPointEvent.asSharedFlow()
 
     private val _centerMapEvent = MutableSharedFlow<Unit>()
     val centerMapEvent: SharedFlow<Unit> = _centerMapEvent.asSharedFlow()
@@ -88,8 +88,8 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             // Load initial lastClickedLocation
             preferencesRepository.getLastClickedLocationFlow().collectLatest { location ->
-                val geoPoint = location?.let { GeoPoint(it.latitude, it.longitude) }
-                _uiState.update { it.copy(lastClickedLocation = geoPoint) }
+                val latLng = location?.let { LatLng(it.latitude, it.longitude) }
+                _uiState.update { it.copy(lastClickedLocation = latLng) }
             }
         }
     }
@@ -103,15 +103,15 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateUserLocation(location: GeoPoint) {
+    fun updateUserLocation(location: LatLng) {
         _uiState.update { it.copy(userLocation = location) }
     }
 
-    fun updateClickedLocation(geoPoint: GeoPoint?) {
-        _uiState.update { it.copy(lastClickedLocation = geoPoint) }
+    fun updateClickedLocation(latLng: LatLng?) {
+        _uiState.update { it.copy(lastClickedLocation = latLng) }
         
         viewModelScope.launch {
-            geoPoint?.let {
+            latLng?.let {
                 preferencesRepository.saveLastClickedLocation(
                     it.latitude,
                     it.longitude
@@ -149,7 +149,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     // Go to point logic
     fun goToPoint(latitude: Double, longitude: Double) {
         viewModelScope.launch {
-            _goToPointEvent.emit(GeoPoint(latitude, longitude))
+            _goToPointEvent.emit(LatLng(latitude, longitude))
         }
     }
 
@@ -274,7 +274,7 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     }
     
     // Update map zoom level
-    fun updateMapZoom(zoom: Double) {
+    fun updateMapZoom(zoom: Float) {
         _uiState.update { it.copy(mapZoom = zoom) }
     }
 }

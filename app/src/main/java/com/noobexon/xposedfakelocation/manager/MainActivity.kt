@@ -11,7 +11,6 @@ import androidx.navigation.compose.rememberNavController
 import com.noobexon.xposedfakelocation.manager.ui.components.ErrorScreen
 import com.noobexon.xposedfakelocation.manager.ui.navigation.AppNavGraph
 import com.noobexon.xposedfakelocation.manager.ui.theme.XposedFakeLocationTheme
-import org.osmdroid.config.Configuration
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -23,13 +22,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         var isXposedModuleEnabled = true
-
-        // Initialize OSMDroid configuration
-        Configuration.getInstance().userAgentValue = com.noobexon.xposedfakelocation.BuildConfig.APPLICATION_ID
-        
         // If the module is not enabled then the app won't have permission to use MODE_WORLD_READABLE.
         try {
-            Configuration.getInstance().load(this, getPreferences(MODE_WORLD_READABLE))
+            getPreferences(MODE_WORLD_READABLE)
         } catch (e: SecurityException) {
             isXposedModuleEnabled = false
             Log.e(TAG, "SecurityException: ${e.message}", e)

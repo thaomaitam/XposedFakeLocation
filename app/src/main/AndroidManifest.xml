@@ -27,6 +27,8 @@
             </intent-filter>
         </activity>
 
+
+
         <!-- Whether to be an Xposed module (specify true) -->
         <meta-data
             android:name="xposedmodule"

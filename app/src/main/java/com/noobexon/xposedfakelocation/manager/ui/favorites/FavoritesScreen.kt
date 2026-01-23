@@ -15,7 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.noobexon.xposedfakelocation.data.model.FavoriteLocation
 import com.noobexon.xposedfakelocation.manager.ui.map.MapViewModel
-import org.osmdroid.util.GeoPoint
+import org.maplibre.android.geometry.LatLng
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +63,7 @@ fun FavoritesScreen(
                     FavoriteItem(
                         favorite = favorite,
                         onClick = {
-                            mapViewModel.updateClickedLocation(GeoPoint(favorite.latitude, favorite.longitude))
+                            mapViewModel.updateClickedLocation(LatLng(favorite.latitude, favorite.longitude))
                             navController.navigateUp()
                         },
                         onDelete = {
