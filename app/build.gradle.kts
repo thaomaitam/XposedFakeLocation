@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.noobexon.xposedfakelocation"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.noobexon.xposedfakelocation"
         minSdk = 30
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "0.0.3"
 

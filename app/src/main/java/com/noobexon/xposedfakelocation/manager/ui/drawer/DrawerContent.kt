@@ -94,59 +94,9 @@ fun DrawerContent(
                 isSelected = navController.currentDestination?.route == Screen.Settings.route
             )
             
-            Spacer(modifier = Modifier.height(DrawerDimensions.SECTION_SPACING))
+            // Spacer adjusted or removed as it was separating Settings from Community
             
-            // Community Section
-            DrawerSectionHeader("Community")
-            
-            DrawerItem(
-                icon = LineAwesomeIcons.Telegram,
-                label = "Telegram",
-                onClick = { Toast.makeText(context, "Coming soon!", Toast.LENGTH_SHORT).show() },
-                trailingIcon = {
-                    Box(
-                        modifier = Modifier
-                            .size(DrawerDimensions.BADGE_SIZE)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                    )
-                }
-            )
-            
-            DrawerItem(
-                icon = LineAwesomeIcons.Discord,
-                label = "Discord",
-                onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/8eCRU3KzVS"))
-                    context.startActivity(intent)
-                    onCloseDrawer()
-                }
-            )
-            
-            DrawerItem(
-                icon = LineAwesomeIcons.Github,
-                label = "GitHub",
-                onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/noobexon1/XposedFakeLocation"))
-                    context.startActivity(intent)
-                    onCloseDrawer()
-                }
-            )
-            
-            Spacer(modifier = Modifier.height(DrawerDimensions.SECTION_SPACING))
-            
-            // About Section
-            DrawerSectionHeader("App Info")
-            
-            DrawerItem(
-                icon = LineAwesomeIcons.InfoCircleSolid,
-                label = "About",
-                onClick = {
-                    navController.navigate(Screen.About.route)
-                    onCloseDrawer()
-                },
-                isSelected = navController.currentDestination?.route == Screen.About.route
-            )
+            // Sections removed: Community, App Info
             
             // Add version info at the bottom
             Spacer(modifier = Modifier.weight(1f))
