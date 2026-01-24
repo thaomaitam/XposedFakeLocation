@@ -31,7 +31,7 @@ fun MapViewContainer(
 
     // Extract state from uiState
     val lastClickedLocation = uiState.lastClickedLocation
-    val mapZoom = uiState.mapZoom ?: DEFAULT_MAP_ZOOM.toDouble()
+    val mapZoom: Double = (uiState.mapZoom ?: DEFAULT_MAP_ZOOM).toDouble()
 
     // Initial camera position
     val initialPosition = lastClickedLocation ?: LatLng(10.8231, 106.6297)
