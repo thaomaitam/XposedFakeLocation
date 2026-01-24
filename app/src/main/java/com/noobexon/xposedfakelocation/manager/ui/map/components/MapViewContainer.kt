@@ -16,6 +16,7 @@ import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.maplibre.android.geometry.LatLng
+import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.rememberCameraState
 import org.maplibre.compose.expressions.dsl.const
 import org.maplibre.compose.layers.CircleLayer
@@ -24,6 +25,8 @@ import org.maplibre.compose.sources.GeoJsonData
 import org.maplibre.compose.sources.rememberGeoJsonSource
 import org.maplibre.compose.style.BaseStyle
 import org.maplibre.compose.util.ClickResult
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun MapViewContainer(
@@ -39,17 +42,13 @@ fun MapViewContainer(
     val initialPosition = lastClickedLocation ?: LatLng(10.8231, 106.6297)
     val initialZoom = if (lastClickedLocation != null) mapZoom else WORLD_MAP_ZOOM.toDouble()
 
-    val cameraState = rememberCameraState()
-    val coroutineScope = rememberCoroutineScope()
-
-    // Set initial camera position
-    LaunchedEffect(Unit) {
-        cameraState.animateTo(
-            position = Position(longitude = initialPosition.longitude, latitude = initialPosition.latitude),
-            zoom = initialZoom,
-            duration = 0
+    val cameraState = rememberCameraState(
+        firstPosition = CameraPosition(
+            target = Position(longitude = initialPosition.longitude, latitude = initialPosition.latitude),
+            zoom = initialZoom
         )
-    }
+    )
+    val coroutineScope = rememberCoroutineScope()
 
     // Update ViewModel when camera moves (zoom level)
     LaunchedEffect(cameraState.position.zoom) {
@@ -60,9 +59,11 @@ fun MapViewContainer(
     LaunchedEffect(Unit) {
         mapViewModel.goToPointEvent.collectLatest { latLng ->
             cameraState.animateTo(
-                position = Position(longitude = latLng.longitude, latitude = latLng.latitude),
-                zoom = DEFAULT_MAP_ZOOM.toDouble(),
-                duration = 1000
+                finalPosition = cameraState.position.copy(
+                    target = Position(longitude = latLng.longitude, latitude = latLng.latitude),
+                    zoom = DEFAULT_MAP_ZOOM.toDouble()
+                ),
+                duration = 1.seconds
             )
             mapViewModel.updateClickedLocation(latLng)
         }
@@ -79,8 +80,7 @@ fun MapViewContainer(
             FeatureCollection(
                 features = listOf(
                     Feature(
-                        geometry = Point(Position(longitude = it.longitude, latitude = it.latitude)),
-                        properties = mapOf("title" to "Selected Location")
+                        geometry = Point(Position(longitude = it.longitude, latitude = it.latitude))
                     )
                 )
             ).json()
@@ -108,10 +108,10 @@ fun MapViewContainer(
             CircleLayer(
                 id = "marker-layer",
                 source = markerSource,
-                circleColor = const(Color.Red),
-                circleRadius = const(8.dp),
-                circleStrokeWidth = const(2.dp),
-                circleStrokeColor = const(Color.White)
+                color = const(Color.Red),
+                radius = const(8.dp),
+                strokeWidth = const(2.dp),
+                strokeColor = const(Color.White)
             )
         }
     }
