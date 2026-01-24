@@ -3,19 +3,27 @@ package com.noobexon.xposedfakelocation.manager.ui.map.components
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.noobexon.xposedfakelocation.data.DEFAULT_MAP_ZOOM
 import com.noobexon.xposedfakelocation.data.WORLD_MAP_ZOOM
 import com.noobexon.xposedfakelocation.manager.ui.map.MapViewModel
+import io.github.dellisd.spatialk.geojson.Feature
+import io.github.dellisd.spatialk.geojson.FeatureCollection
+import io.github.dellisd.spatialk.geojson.Point
+import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.flow.collectLatest
-import org.maplibre.android.camera.CameraUpdateFactory
+import kotlinx.coroutines.launch
 import org.maplibre.android.geometry.LatLng
-import org.maplibre.compose.MaplibreMap
-import org.maplibre.compose.camera.CameraPosition
-import org.maplibre.compose.camera.rememberCameraPositionState
-import org.maplibre.compose.layer.SymbolLayer
-import org.maplibre.compose.source.GeoJsonSource
-import org.maplibre.compose.style.MapStyle
+import org.maplibre.compose.camera.rememberCameraState
+import org.maplibre.compose.expressions.dsl.const
+import org.maplibre.compose.layers.CircleLayer
+import org.maplibre.compose.map.MaplibreMap
+import org.maplibre.compose.sources.GeoJsonData
+import org.maplibre.compose.sources.rememberGeoJsonSource
+import org.maplibre.compose.style.BaseStyle
+import org.maplibre.compose.util.ClickResult
 
 @Composable
 fun MapViewContainer(
@@ -31,23 +39,30 @@ fun MapViewContainer(
     val initialPosition = lastClickedLocation ?: LatLng(10.8231, 106.6297)
     val initialZoom = if (lastClickedLocation != null) mapZoom else WORLD_MAP_ZOOM.toDouble()
 
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition(target = initialPosition, zoom = initialZoom)
+    val cameraState = rememberCameraState()
+    val coroutineScope = rememberCoroutineScope()
+
+    // Set initial camera position
+    LaunchedEffect(Unit) {
+        cameraState.animateTo(
+            position = Position(longitude = initialPosition.longitude, latitude = initialPosition.latitude),
+            zoom = initialZoom,
+            duration = 0
+        )
     }
 
     // Update ViewModel when camera moves (zoom level)
-    LaunchedEffect(cameraPositionState.isMoving) {
-        if (!cameraPositionState.isMoving) {
-            mapViewModel.updateMapZoom(cameraPositionState.position.zoom.toFloat())
-        }
+    LaunchedEffect(cameraState.position.zoom) {
+        mapViewModel.updateMapZoom(cameraState.position.zoom.toFloat())
     }
 
     // Handle "Go To Point" events
     LaunchedEffect(Unit) {
         mapViewModel.goToPointEvent.collectLatest { latLng ->
-            cameraPositionState.animate(
-                update = CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_MAP_ZOOM.toDouble()),
-                durationMs = 1000
+            cameraState.animateTo(
+                position = Position(longitude = latLng.longitude, latitude = latLng.latitude),
+                zoom = DEFAULT_MAP_ZOOM.toDouble(),
+                duration = 1000
             )
             mapViewModel.updateClickedLocation(latLng)
         }
@@ -58,63 +73,46 @@ fun MapViewContainer(
         mapViewModel.setLoadingFinished()
     }
 
-    // Marker Data Source
-    // We create a GeoJSON feature string for the marker if it exists
+    // Marker Data Source - create geo json for marker
     val markerGeoJson = remember(lastClickedLocation) {
         lastClickedLocation?.let {
-            """
-            {
-                "type": "FeatureCollection",
-                "features": [{
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [${it.longitude}, ${it.latitude}]
-                    },
-                    "properties": {
-                        "title": "Selected Location"
-                    }
-                }]
-            }
-            """.trimIndent()
-        }
+            FeatureCollection(
+                features = listOf(
+                    Feature(
+                        geometry = Point(Position(longitude = it.longitude, latitude = it.latitude)),
+                        properties = mapOf("title" to "Selected Location")
+                    )
+                )
+            ).json()
+        } ?: FeatureCollection().json()
     }
+
+    val markerSource = rememberGeoJsonSource(
+        data = GeoJsonData.JsonString(markerGeoJson)
+    )
 
     MaplibreMap(
         modifier = Modifier.fillMaxSize(),
-        style = MapStyle("https://demotiles.maplibre.org/style.json"), // Free demo style
-        cameraPositionState = cameraPositionState,
-        onMapClick = { latLng ->
+        baseStyle = BaseStyle.Uri("https://demotiles.maplibre.org/style.json"),
+        cameraState = cameraState,
+        onMapClick = { pos, offset ->
             if (!uiState.isPlaying) {
-                mapViewModel.updateClickedLocation(latLng)
+                val clickedLatLng = LatLng(pos.latitude, pos.longitude)
+                mapViewModel.updateClickedLocation(clickedLatLng)
             }
-            true // Consume event
+            ClickResult.Consume
         }
     ) {
-        // Add Marker Source and Layer
-        if (markerGeoJson != null) {
-            GeoJsonSource(
-                id = "marker-source",
-                data = markerGeoJson
-            )
-            
-            // Note: In a real app, you would load an icon image first. 
-            // For now, we use a simple circle layer to represent the point to avoid asset complexity.
-            // Or if MapLibre provided default markers, we'd use them.
-            // Since we don't have a marker icon loaded in the style, we'll use a specific circle representation.
-            
-            org.maplibre.compose.layer.CircleLayer(
+        // Add Marker Circle Layer
+        if (lastClickedLocation != null) {
+            CircleLayer(
                 id = "marker-layer",
-                sourceId = "marker-source",
-                block = {
-                    circleColor("red")
-                    circleRadius(8.0f)
-                    circleStrokeWidth(2.0f)
-                    circleStrokeColor("white")
-                }
+                source = markerSource,
+                circleColor = const(Color.Red),
+                circleRadius = const(8.dp),
+                circleStrokeWidth = const(2.dp),
+                circleStrokeColor = const(Color.White)
             )
         }
     }
 }
-
-
