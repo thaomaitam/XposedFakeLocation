@@ -55,7 +55,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.maplibre.compose)
     implementation(libs.maplibre.android.sdk)
-    implementation(libs.spatialk.geojson)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.line.awesome.android)

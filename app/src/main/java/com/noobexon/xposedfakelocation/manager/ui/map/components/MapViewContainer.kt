@@ -9,12 +9,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.noobexon.xposedfakelocation.data.DEFAULT_MAP_ZOOM
 import com.noobexon.xposedfakelocation.data.WORLD_MAP_ZOOM
 import com.noobexon.xposedfakelocation.manager.ui.map.MapViewModel
-import org.maplibre.spatialk.geojson.Feature
-import org.maplibre.spatialk.geojson.FeatureCollection
-import org.maplibre.spatialk.geojson.Point
-import org.maplibre.spatialk.geojson.Position
+import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.rememberCameraState
@@ -25,7 +21,6 @@ import org.maplibre.compose.sources.GeoJsonData
 import org.maplibre.compose.sources.rememberGeoJsonSource
 import org.maplibre.compose.style.BaseStyle
 import org.maplibre.compose.util.ClickResult
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -40,7 +35,7 @@ fun MapViewContainer(
 
     // Initial camera position
     val initialPosition = lastClickedLocation ?: LatLng(10.8231, 106.6297)
-    val initialZoom = if (lastClickedLocation != null) mapZoom else WORLD_MAP_ZOOM.toDouble()
+    val initialZoom: Double = if (lastClickedLocation != null) mapZoom else WORLD_MAP_ZOOM.toDouble()
 
     val cameraState = rememberCameraState(
         firstPosition = CameraPosition(
@@ -48,7 +43,6 @@ fun MapViewContainer(
             zoom = initialZoom
         )
     )
-    val coroutineScope = rememberCoroutineScope()
 
     // Update ViewModel when camera moves (zoom level)
     LaunchedEffect(cameraState.position.zoom) {
@@ -74,17 +68,23 @@ fun MapViewContainer(
         mapViewModel.setLoadingFinished()
     }
 
-    // Marker Data Source - create geo json for marker
-    val markerGeoJson = remember(lastClickedLocation) {
+    // Marker Data Source - create geo json for marker using raw JSON string
+    val markerGeoJson: String = remember(lastClickedLocation) {
         lastClickedLocation?.let {
-            FeatureCollection(
-                features = listOf(
-                    Feature(
-                        geometry = Point(Position(longitude = it.longitude, latitude = it.latitude))
-                    )
-                )
-            ).json()
-        } ?: FeatureCollection().json()
+            """
+            {
+                "type": "FeatureCollection",
+                "features": [{
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [${it.longitude}, ${it.latitude}]
+                    },
+                    "properties": {}
+                }]
+            }
+            """.trimIndent()
+        } ?: """{"type": "FeatureCollection", "features": []}"""
     }
 
     val markerSource = rememberGeoJsonSource(
