@@ -9,10 +9,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.noobexon.xposedfakelocation.data.DEFAULT_MAP_ZOOM
 import com.noobexon.xposedfakelocation.data.WORLD_MAP_ZOOM
 import com.noobexon.xposedfakelocation.manager.ui.map.MapViewModel
-import io.github.dellisd.spatialk.geojson.Feature
-import io.github.dellisd.spatialk.geojson.FeatureCollection
-import io.github.dellisd.spatialk.geojson.Point
-import io.github.dellisd.spatialk.geojson.Position
+import org.maplibre.spatialk.geojson.Feature
+import org.maplibre.spatialk.geojson.FeatureCollection
+import org.maplibre.spatialk.geojson.Point
+import org.maplibre.spatialk.geojson.Position
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.maplibre.android.geometry.LatLng
