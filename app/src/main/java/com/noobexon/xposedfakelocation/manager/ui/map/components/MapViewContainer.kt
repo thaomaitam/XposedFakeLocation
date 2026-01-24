@@ -9,7 +9,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.noobexon.xposedfakelocation.data.DEFAULT_MAP_ZOOM
 import com.noobexon.xposedfakelocation.data.WORLD_MAP_ZOOM
 import com.noobexon.xposedfakelocation.manager.ui.map.MapViewModel
-import io.github.dellisd.spatialk.geojson.Position
+import org.maplibre.spatialk.geojson.Position
 import kotlinx.coroutines.flow.collectLatest
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.compose.camera.CameraPosition
