@@ -50,7 +50,7 @@ androidx-datastore-preferences = { group = "androidx.datastore", name = "datasto
 androidx-datastore-preferences-core = { group = "androidx.datastore", name = "datastore-preferences-core", version.ref = "datastore" }
 spatialk-geojson = { group = "io.github.dellisd.spatialk", name = "geojson", version.ref = "spatialk" }
 libxposed-api = { group = "io.github.libxposed", name = "api", version.ref = "libxposed-api" }
-libxposed-service = { group = "com.github.libxposed", name = "service", version.ref = "libxposed-service" }
+libxposed-service = { group = "io.github.libxposed", name = "service", version.ref = "libxposed-service" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -8,6 +8,7 @@ pluginManagement {
             }
         }
         mavenCentral()
+        mavenLocal()
         gradlePluginPortal()
     }
 }
@@ -16,8 +17,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal {
+            content {
+                includeGroup("io.github.libxposed")
+            }
+        }
         maven { url = uri("https://api.xposed.info/") }
         maven { url = uri("https://repo.lsposed.org/") }
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
