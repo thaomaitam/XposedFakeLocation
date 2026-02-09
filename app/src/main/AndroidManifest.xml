@@ -47,9 +47,11 @@
             android:resource="@array/xposedscope"/>
 
         <!-- Indicate usage of new XSharedPreferences -->
-        <meta-data
-            android:name="xposedsharedprefs"
-            android:value="true" />
+        <provider
+            android:name="io.github.libxposed.service.XposedProvider"
+            android:authorities="${applicationId}.XposedService"
+            android:exported="true"
+            android:initOrder="0x7FFFFFFF" />
 
     </application>
 

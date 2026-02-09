@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "XposedFakeLocation"
 include(":app")
+include(":libxposed-compat")

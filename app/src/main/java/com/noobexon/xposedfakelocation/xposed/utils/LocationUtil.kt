@@ -14,7 +14,7 @@ import com.noobexon.xposedfakelocation.data.DEFAULT_SPEED_ACCURACY
 import com.noobexon.xposedfakelocation.data.DEFAULT_VERTICAL_ACCURACY
 import com.noobexon.xposedfakelocation.data.PI
 import com.noobexon.xposedfakelocation.data.RADIUS_EARTH
-import de.robv.android.xposed.XposedBridge
+import com.noobexon.xposedfakelocation.xposed.bridge.Xposed
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.util.Random
 import kotlin.math.asin
@@ -98,9 +98,9 @@ object LocationUtil {
     private fun attemptHideMockProvider(fakeLocation: Location) {
         try {
             HiddenApiBypass.invoke(fakeLocation.javaClass, fakeLocation, "setIsFromMockProvider", false)
-            XposedBridge.log("$TAG invoked hidden API - setIsFromMockProvider: false)")
+            Xposed.log("$TAG invoked hidden API - setIsFromMockProvider: false)")
         } catch (e: Exception) {
-            XposedBridge.log("$TAG Not possible to mock - ${e.message}")
+            Xposed.log("$TAG Not possible to mock - ${e.message}")
         }
     }
 
@@ -147,19 +147,19 @@ object LocationUtil {
                 }
 
                 if (DEBUG) {
-                    XposedBridge.log("$TAG Updated fake location values to:")
-                    XposedBridge.log("\tCoordinates: (latitude = $latitude, longitude = $longitude)")
-                    XposedBridge.log("\tAccuracy: $accuracy")
-                    XposedBridge.log("\tAltitude: $altitude")
-                    XposedBridge.log("\tVertical Accuracy: $verticalAccuracy")
-                    XposedBridge.log("\tMean Sea Level: $meanSeaLevel")
-                    XposedBridge.log("\tMean Sea Level Accuracy: $meanSeaLevelAccuracy")
-                    XposedBridge.log("\tSpeed: $speed")
-                    XposedBridge.log("\tSpeed Accuracy: $speedAccuracy")
+                    Xposed.log("$TAG Updated fake location values to:")
+                    Xposed.log("\tCoordinates: (latitude = $latitude, longitude = $longitude)")
+                    Xposed.log("\tAccuracy: $accuracy")
+                    Xposed.log("\tAltitude: $altitude")
+                    Xposed.log("\tVertical Accuracy: $verticalAccuracy")
+                    Xposed.log("\tMean Sea Level: $meanSeaLevel")
+                    Xposed.log("\tMean Sea Level Accuracy: $meanSeaLevelAccuracy")
+                    Xposed.log("\tSpeed: $speed")
+                    Xposed.log("\tSpeed Accuracy: $speedAccuracy")
                 }
-            } ?: XposedBridge.log("$TAG Last clicked location is null")
+            } ?: Xposed.log("$TAG Last clicked location is null")
         } catch (e: Exception) {
-            XposedBridge.log("$TAG Error - ${e.message}")
+            Xposed.log("$TAG Error - ${e.message}")
         }
     }
 

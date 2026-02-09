@@ -1,21 +1,29 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# LibXposed API 100 Keep Rules
+-keep class * extends io.github.libxposed.api.XposedModule {
+    public <init>(io.github.libxposed.api.XposedInterface, io.github.libxposed.api.XposedModuleInterface$ModuleLoadedParam);
+}
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep all Hooker classes
+-keep class * implements io.github.libxposed.api.XposedInterface$Hooker {
+    public static void before(...);
+    public static void after(...);
+    public static ** before(...);
+}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep dummy annotations
+-keep @interface io.github.libxposed.api.annotations.*
+-keep @io.github.libxposed.api.annotations.XposedHooker class * {
+    @io.github.libxposed.api.annotations.BeforeInvocation public static *;
+    @io.github.libxposed.api.annotations.AfterInvocation public static *;
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep Bridge and Arch layers
+-keep class com.noobexon.xposedfakelocation.xposed.bridge.** { *; }
+-keep class com.noobexon.xposedfakelocation.xposed.arch.** { *; }
+-keep class * extends com.noobexon.xposedfakelocation.xposed.arch.IHook { *; }
+
+# Keep XposedProvider
+-keep class io.github.libxposed.service.XposedProvider
+
+# Keep HiddenApiBypass
+-keep class org.lsposed.hiddenapibypass.** { *; }

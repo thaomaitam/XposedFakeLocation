@@ -25,13 +25,7 @@ class PreferencesRepository(private val context: Context) {
     private val tag = "PreferencesRepository"
     
     // Legacy SharedPreferences for Xposed Module compatibility
-    @SuppressLint("WorldReadableFiles")
-    private val sharedPrefs = try {
-        context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_WORLD_READABLE)
-    } catch (e: SecurityException) {
-        Log.w(tag, "MODE_WORLD_READABLE not available: ${e.message}")
-        context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE)
-    }
+    private val sharedPrefs = context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE)
 
     private val gson = Gson()
 
