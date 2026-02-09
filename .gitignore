@@ -39,3 +39,7 @@ app/google-services.json
 # === Kotlin build artifacts ===
 .kotlin/
 .cursor/
+
+# === Agent & Temp ===
+.agent/
+temp-ref/
